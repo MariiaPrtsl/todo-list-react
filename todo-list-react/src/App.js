@@ -2,8 +2,13 @@ import { useState } from "react";
 import CustomForm from "./components/CustomForm";
 import TaskList from "./components/TaskList";
 import EditForm from "./components/EditForm"
+import useLocalStorage from './hooks/useLocalStorage'
+
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useLocalStorage('react-todo-tasks', []);
+  const [previousFoculEl, setPreviousFoculEl] = useState(null);
+  const [editedTask, setEditedTasks] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const addTask = (task) => {
     setTasks((prevState) => [...prevState, task]);
@@ -17,19 +22,48 @@ function App() {
       prevState.map((t) => (t.id === id ? { ...t, checked: !t.checked } : t))
     );
   };
+  const updateTask = (task) => {
+    setTasks(prevState => prevState.map(t => (
+      t.id === task.id
+        ? { ...t, name: task.name }
+        : t
+    )))
+closeEditMode()
+  };
+
+const closeEditMode =()=>{
+  setIsEditing(false);
+  previousFoculEl.focus();
+}
+
+  const enterEditMode = (task)=>{
+    setEditedTasks(task);
+    setIsEditing(true);
+    setPreviousFoculEl(document.activeElement)
+  }
   return (
     <div className="container">
       <header>
         <h1>My Task List</h1>
       </header>
-      <EditForm
+      { isEditing &&(
+        <EditForm
       editedTask={editedTask}
-      updateTask={updateTask}/>
+      updateTask={updateTask}
+      closeEditMode= {closeEditMode}
+      />
+      )  
+    }
+      
       <CustomForm addTask={addTask} />
-      {tasks && <TaskList 
+      {tasks && (
+      <TaskList 
       tasks={tasks} 
       deleteTask={deleteTask} 
-      toggleTask={toggleTask}/>}
+      toggleTask={toggleTask}
+      enterEditMode={enterEditMode}
+      />
+      )}
     </div>
   );
 }

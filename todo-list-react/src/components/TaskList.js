@@ -2,7 +2,7 @@ import React from 'react'
 import TaskItem from './TaskItem'
 import styles from './TaskList.module.css'
 
-const TaskList = ({tasks,deleteTask,toggleTask}) => {
+const TaskList = ({tasks,deleteTask,toggleTask, enterEditMode}) => {
   return (
     <ul className={styles.tasks}>
       {tasks.sort((a, b) => b.id - a.id).map(task => (
@@ -11,6 +11,7 @@ const TaskList = ({tasks,deleteTask,toggleTask}) => {
           task={task}
           deleteTask={deleteTask}
           toggleTask={toggleTask}
+          enterEditMode={enterEditMode}
         />
       ))
       }
